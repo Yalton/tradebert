@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  billbot:
+    container_name: tradebert
+    image: tradebot:latest
+    volumes:
+      - /opt/bots/Tradebert:/usr/src/app
+#      - /mnt/truenas/Datahoard/Programs/GPT4ALL_Models:/usr/src/app/models
+    working_dir: /usr/src/app
+    restart: unless-stopped

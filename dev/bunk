@@ -1,0 +1,451 @@
+
+# print(df.columns)
+# print(df)
+# df['Date'] = pd.to_datetime(df['Date'])
+# df.set_index('Date', inplace=True)
+
+# Apply thresholds to total_signals
+# total_signals = np.where(total_signals > 0.75, "Strong Buy", 
+#                         np.where(total_signals > 0.5, "Buy",
+#                                 np.where(total_signals < -0.5, "Sell",
+#                                         np.where(total_signals < -0.75, "Strong Sell", "Hold"))))
+
+
+
+    # def generate_ensemble_signal(self):
+    #     total_signal = 0
+    #     for strategy in self.strategies:
+    #         total_signal += strategy.generate_signal()
+    #     return total_signal
+
+
+    # def append_data_column_to_signal(self, signal): 
+    #     df = self.strategies[-1].get_dataframe()
+        
+    #     # Convert the signal array into a pandas Series with the same index as df
+    #     signal_series = pd.Series(signal, index=df.index)
+
+    #     # Now create a new DataFrame by merging the original df and the signal series
+    #     df_signal = pd.DataFrame({'Date': df.index, 'Signal': signal_series}).set_index('Date')
+    #     return df_signal 
+
+    # def process_signals(self, signals, weights):
+    #     # Calculate the weighted signals
+    #     weighted_signals = signals * weights
+
+    #     # Calculate the total signals
+    #     total_signal = np.sum(weighted_signals)
+
+    #     # Calculate the sum of weights
+    #     total_weight = np.sum(weights)
+
+    #     # Calculate weighted percentage
+    #     weighted_percentage = total_signal / total_weight
+
+    #     # Define your thresholds
+    #     buy_threshold = 0.5
+    #     strong_buy_threshold = 0.75
+
+    #     # Check the thresholds and return the corresponding signal
+    #     if weighted_percentage >= strong_buy_threshold:
+    #         return "Strong Buy"
+    #     elif weighted_percentage >= buy_threshold:
+    #         return "Buy"
+    #     elif weighted_percentage <= -strong_buy_threshold:
+    #         return "Strong Sell"
+    #     elif weighted_percentage <= -buy_threshold:
+    #         return "Sell"
+    #     else:
+    #         return "Hold"
+
+
+    # print("Total Signals 1:")
+    # print(total_signals)
+    # print("Signal Weights: ")
+
+    # print("Total Signals 2:")
+    # print(total_signals)
+
+
+        # def refresh_signals(self):
+    #     self.signals = analyze_assets(symbols, strategy_weights)
+    
+    # def get_current_price(self)
+        
+
+    # def calculate_trade_amount(self, signal):
+    #     portfolio_balance = self.get_balance()  # assuming this function exists in your system
+    #     if signal == "Buy":
+    #         return portfolio_balance * 0.2
+    #     elif signal == "Strong Buy":
+    #         return portfolio_balance * 0.3
+
+    # def calculate_stop_price(self, symbol):
+    #     atr = self.get_atr(symbol)  # assuming this function exists in your system
+    #     current_price = self.get_current_price(symbol)  # assuming this function exists in your system
+    #     return current_price - atr
+
+    # def calculate_take_profit_price(self, symbol):
+    #     current_price = self.get_current_price(symbol)  # assuming this function exists in your system
+    #     return current_price * 1.15
+
+    # def refresh_signals(self):
+    #     self.signals = self.analyze_assets()
+
+    # def check_cooldown(self):
+    #     # this function should check whether the cooldown for each symbol in self.traded_symbols has passed
+    #     # if it has, the symbol should be removed from self.traded_symbols
+    #     pass
+
+    # def crypto_Ladder_Strategy(self, data): 
+    #     # define the parameters
+    #     per = 100
+    #     mult = 3.0
+
+    #     # calculate the smoothed average range
+    #     df['range'] = abs(df['Close'] - df['Close'].shift())
+    #     df['av_range'] = calculate_ema(df['range'], per)
+    #     df['smooth_range'] = calculate_ema(df['av_range'], per * 2 - 1) * mult
+
+    #     # range filter
+    #     df['filt'] = df['Close']
+    #     for i in range(1, len(df)):
+    #         if df.loc[i, 'Close'] > df.loc[i - 1, 'filt']:
+    #             df.loc[i, 'filt'] = max(df.loc[i, 'Close'] - df.loc[i, 'smooth_range'], df.loc[i - 1, 'filt'])
+    #         else:
+    #             df.loc[i, 'filt'] = min(df.loc[i, 'Close'] + df.loc[i, 'smooth_range'], df.loc[i - 1, 'filt'])
+
+    #     # filter direction
+    #     df['upward'] = (df['filt'] > df['filt'].shift()).cumsum()
+    #     df['downward'] = (df['filt'] < df['filt'].shift()).cumsum()
+
+    #     # target bands
+    #     df['hband'] = df['filt'] + df['smooth_range']
+    #     df['lband'] = df['filt'] - df['smooth_range']
+
+    #     # break outs
+    #     df['longCond'] = ((df['Close'] > df['filt']) & (df['Close'] > df['Close'].shift()) & (df['upward'] > 0)) | ((df['Close'] > df['filt']) & (df['Close'] < df['Close'].shift()) & (df['upward'] > 0))
+    #     df['shortCond'] = ((df['Close'] < df['filt']) & (df['Close'] < df['Close'].shift()) & (df['downward'] > 0)) | ((df['Close'] < df['filt']) & (df['Close'] > df['Close'].shift()) & (df['downward'] > 0))
+    #     df['CondIni'] = np.where(df['longCond'], 1, np.where(df['shortCond'], -1, np.nan))
+    #     df['CondIni'].fillna(method='ffill', inplace=True)
+    #     df['longCondition'] = df['longCond'] & (df['CondIni'].shift() == -1)
+    #     df['shortCondition'] = df['shortCond'] & (df['CondIni'].shift() == 1)
+
+    # def runStrategies(self, data): 
+    #     macd_signal = self.macd_strategy(data)
+    #     SMI_signal = self.Squeeze_Momentum_Indicator(data)
+
+
+# Calculate 50-day moving average
+# #data['50_MA'] = data['Close'].rolling(window=50).mean()
+# class TradingStrategies: 
+
+#     def __init__(self, data): 
+#         #tech_ind = self.TI.TechnicalIndicators(data)
+#         # analyzer = AA.AssetAnalyzer(data)
+#         # analyzer.gatherTechIndicators()
+#         # data = analyzer.data
+#         pass
+
+#     def trend_following_strategy(self, data):
+#         data['50_MA'] = self.TI.moving_average(50)
+
+#         Signal = 0
+#         Signal = np.where(data['Close'] > data['MA'], 1, -1)
+
+#         return Signal
+
+#     def momentum_trading_strategy(self, data, roc_window=14):
+#         """
+#         data: pandas.DataFrame with 'Close' column
+#         roc_window: window for rate of change calculation
+#         """
+#         # Calculate Rate of Change (ROC)
+#         #ROC = self.TI.rate_of_change(roc_window)
+#         data['ROC'] = self.TI.rate_of_change(data, roc_window)
+        
+#         # Create signals based on the momentum
+#         # If ROC > 0 -> Buy (1)
+#         # If ROC < 0 -> Sell (-1)
+#         Signal = 0 
+#         Signal = np.where(data['ROC'] > 0, 1, -1)
+
+#         return Signal
+# Trend Following Strategy
+
+
+    # def trend_following_strategy(self, data):
+    #     data['50_MA'] = self.TI.moving_average(50)
+
+    #     Signal = 0
+    #     Signal = np.where(data['Close'] > data['MA'], 1, -1)
+
+    #     return Signal
+
+
+
+    # def reversal_trading_strategy(self, data, rsi_window=14, overbought=70, oversold=30):
+    #     """
+    #     data: pandas.DataFrame with 'Close' column
+    #     rsi_window: window for RSI calculation
+    #     overbought: RSI level indicating overbought condition
+    #     oversold: RSI level indicating oversold condition
+    #     """
+    #     # Calculate RSI
+    #     #data['RSI'] = talib.RSI(data['Close'].values, timeperiod=rsi_window)
+    #     data['RSI'] = self.TI.relative_strength_index(data, rsi_window)
+
+
+    #     # Create signals based on the RSI
+    #     # If RSI > overbought -> Sell (-1)
+    #     # If RSI < oversold -> Buy (1)
+    #     Signal = 0
+    #     # Signal = np.where(data['RSI'] > overbought, -1,  np.where(data['RSI'] < oversold, 1, 0))
+        
+    #     return np.where(data['RSI'] > overbought, -1,  np.where(data['RSI'] < oversold, 1, 0))
+
+    # def volume_analysis_strategy(self, data):
+    #     """
+    #     data: pandas.DataFrame with 'Close' and 'Volume' columns
+    #     """
+    #     # Calculate On Balance Volume (OBV)
+    #     #data['OBV'] = talib.OBV(data['Close'].values, data['Volume'].values)
+    #     data['OBV'] = self.TI.on_balance_volume
+        
+    #     # Create signals based on the OBV
+    #     # If OBV is rising -> Buy (1)
+    #     # If OBV is falling -> Sell (-1)
+    #     Signal = 0
+    #     Signal = np.where(data['OBV'] > data['OBV'].shift(1), 1, -1)
+        
+    #     return Signal
+
+    # def breakout_trading_strategy(self, data, window=14):
+    #     """
+    #     data: pandas.DataFrame with 'Close' column
+    #     window: window for high and low calculation
+    #     """
+    #     # Calculate rolling high and low
+    #     data['High'] = data['Close'].rolling(window=window).max()
+    #     data['Low'] = data['Close'].rolling(window=window).min()
+
+    #     Buy_Sig = np.where(data['Close'] > data['High'].shift(1), 1, 0)
+    #     Sell_Sig = np.where(data['Close'] < data['Low'].shift(1), -1, 0)
+
+    #     # # Buy when close price breaks above high
+    #     # data['Buy_Signal'] = np.where(data['Close'] > data['High'].shift(1), 1, 0)
+    #     # Sell when close price breaks below low
+    #     # data['Sell_Signal'] = np.where(data['Close'] < data['Low'].shift(1), -1, 0)
+
+    #     return (Buy_Sig + Sell_Sig)
+
+
+    # def trend_strength_volatility_strategy(self, data, window=14):
+    #     """
+    #     data: pandas.DataFrame with 'Close' column
+    #     window: window for ATR and MA calculation
+    #     """
+    #     # Calculate ATR
+    #     data['ATR'] = talib.ATR(data['High'].values, data['Low'].values, data['Close'].values, timeperiod=window)
+    #     # Calculate MA
+    #     data['MA'] = data['Close'].rolling(window=window).mean()
+        
+    #     Buy_Sig = np.where((data['Close'] > data['MA']) & (data['ATR'] > data['ATR'].shift(1)), 1, 0)
+    #     Sell_Sig = np.where((data['Close'] < data['MA']) & (data['ATR'] < data['ATR'].shift(1)), -1, 0)
+    #     # # Buy when close price is above MA and ATR is rising
+    #     # data['Buy_Signal'] = np.where((data['Close'] > data['MA']) & (data['ATR'] > data['ATR'].shift(1)), 1, 0)
+    #     # # Sell when close price is below MA and ATR is falling
+    #     # data['Sell_Signal'] = np.where((data['Close'] < data['MA']) & (data['ATR'] < data['ATR'].shift(1)), -1, 0)
+
+        
+    #     return Buy_Sig, Sell_Sig
+
+    # def volume_flow_strategy(self, data):
+    #     """
+    #     data: pandas.DataFrame with 'Close' and 'Volume' columns
+    #     """
+    #     # Calculate CMF
+    #     data['CMF'] = talib.ADX(data['High'].values, data['Low'].values, data['Close'].values, timeperiod=20)
+        
+    #     # Buy when CMF is positive
+    #     # data['Buy_Signal'] = np.where(data['CMF'] > 0, 1, 0)
+    #     # # Sell when CMF is negative
+    #     # data['Sell_Signal'] = np.where(data['CMF'] < 0, -1, 0)
+
+    #     Buy_Sig = np.where(data['CMF'] > 0, 1, 0)
+    #     Sell_Sig = np.where(data['CMF'] < 0, -1, 0)
+
+    #     return Buy_Sig, Sell_Sig
+
+    # def support_resistance_strategy(self, data, window=14):
+    #     """
+    #     data: pandas.DataFrame with 'Close' column
+    #     window: window for support and resistance calculation
+    #     """
+    #     # Calculate rolling high and low
+    #     data['Resistance'] = data['Close'].rolling(window=window).max()
+    #     data['Support'] = data['Close'].rolling(window=window).min()
+        
+    #     # Buy when close price is near support level
+    #     data['Buy_Signal'] = np.where(data['Close'] < (data['Support'].shift(1) * 1.03), 1, 0)  # 3% below support
+    #     # Sell when close price is near resistance level
+    #     data['Sell_Signal'] = np.where(data['Close'] > (data['Resistance'].shift(1) * 0.97), -1, 0) 
+
+    #     Buy_Sig = np.where(data['Close'] < (data['Support'].shift(1) * 1.03), 1, 0)
+    #     Sell_Sig = np.where(data['Close'] > (data['Resistance'].shift(1) * 0.97), -1, 0) 
+
+    #     return Buy_Sig, Sell_Sig
+
+    # def trend_continuation_reversal_strategy(self, data, window=14):
+    #     """
+    #     data: pandas.DataFrame with 'Close' column
+    #     window: window for moving average calculation
+    #     """
+    #     # Calculate moving average
+    #     data['MA'] = data['Close'].rolling(window=window).mean()
+    #     data['Momentum'] = data['Close'] - data['MA']
+        
+    #     # # Buy when Momentum is positive and rising
+    #     # data['Buy_Signal'] = np.where((data['Momentum'] > 0) & (data['Momentum'] > data['Momentum'].shift(1)), 1, 0)
+    #     # # Sell when Momentum is negative and falling
+    #     # data['Sell_Signal'] = np.where((data['Momentum'] < 0) & (data['Momentum'] < data['Momentum'].shift(1)), -1, 0)
+
+    #     Buy_Sig = np.where((data['Momentum'] > 0) & (data['Momentum'] > data['Momentum'].shift(1)), 1, 0)
+    #     Sell_Sig = np.where((data['Momentum'] < 0) & (data['Momentum'] < data['Momentum'].shift(1)), -1, 0)
+
+    #     return Buy_Sig, Sell_Sig
+
+
+    # # Buy when close price is below one standard deviation from mean
+    # data['Buy_Signal'] = np.where(data['Close'] < (data['Mean'] - data['Std']), 1, 0)
+    # # Sell when close price is above one standard deviation from mean
+    # data['Sell_Signal'] = np.where(data['Close'] > (data['Mean'] + data['Std']), -1, 0)
+# class MeanReversionStrategy(BaseStrategy):
+#     def __init__(self, weight, data, window=14):
+#         super().__init__(weight=weight, data=data)
+#         self.window = window
+
+#     def generate_signal(self):
+#         self.data['Mean'] = self.data['Close'].rolling(window=self.window).mean()
+#         self.data['Std'] = self.data['Close'].rolling(window=self.window).std()
+        
+#         # Buy when close price is below one standard deviation from mean
+#         # Sell when close price is above one standard deviation from mean
+#         return np.where(self.data['Close'] < (self.data['Mean'] - self.data['Std']), 1, 
+#                         np.where(self.data['Close'] > (self.data['Mean'] + self.data['Std']), -1, 0))
+
+
+    # def mean_reversion_strategy(self, data, window=14):
+    #     """
+    #     data: pandas.DataFrame with 'Close' column
+    #     window: window for mean and standard deviation calculation
+    #     """
+    #     # Calculate moving average and standard deviation
+    #     data['Mean'] = data['Close'].rolling(window=window).mean()
+    #     data['Std'] = data['Close'].rolling(window=window).std()
+        
+
+
+    #     Buy_Sig = np.where(data['Close'] < (data['Mean'] - data['Std']), 1, 0)
+    #     Sell_Sig = np.where(data['Close'] > (data['Mean'] + data['Std']), -1, 0)
+
+
+    #     return Buy_Sig, Sell_Sig
+
+    # def bollinger_bands_strategy(self, data, window=20, num_std=2):
+    #     '''Calculate the bollinger bands for a given dataset
+        
+    #     Args:
+    #         data (pandas.Series): The dataset to calculate the moving average for.
+    #         window (int): The size of the window to use for the moving average calculation.
+        
+    #     Returns:
+    #         pandas.Series: The moving average of the given dataset.
+    #     '''
+         
+    #     self.data['SMA'] = self.data['Close'].rolling(window).mean()
+    #     self.data['stddev'] = self.data['Close'].rolling(window).std()
+    #     self.data['BBUP'] = self.data['SMA'] + num_std * self.data['stddev']
+    #     self.data['BBLOW'] = self.data['SMA'] - num_std * self.data['stddev']
+
+    #     bb_signal = ""
+    #     if self.data['Close'].iloc[-1] > self.data['BBUP'].iloc[-1]:
+    #         bb_signal = "SELL"
+    #     elif self.data['Close'].iloc[-1] < self.data['BBLOW'].iloc[-1]:
+    #         bb_signal = "BUY"
+    #     else:
+    #         bb_signal = "HOLD"
+            
+    #     return bb_signal
+
+    # def macd_strategy(self, data):
+    #     # MACD parameters
+    #     n_fast = 12
+    #     n_slow = 26
+    #     n_sign = 9
+
+    #     # 200-day EMA
+    #     data['ema200'] = ta.trend.ema_indicator(data['Close'], window=200)
+
+    #     # MACD line and signal line
+    #     data['macd_line'] = ta.trend.macd_diff(data['Close'], n_slow, n_fast, n_sign)
+
+    #     # Create signals DataFrame
+    #     signals = pd.DataFrame(index=data.index)
+    #     signals['signal'] = 0.0
+
+    #     # Generate signals
+    #     signals['signal'] = np.where((data['macd_line'] > 0) & (data['Close'] > data['ema200']), 1.0, 0.0)
+    #     signals['signal'] = np.where((data['macd_line'] < 0) & (data['Close'] < data['ema200']), -1.0, signals['signal'])
+    #     signals['positions'] = signals['signal'].diff()
+
+
+    #     if signals['positions'].iloc[-1] == 1.0:
+    #         macd_signal = 1
+    #     elif signals['positions'].iloc[-1] == -1.0:
+    #         macd_signal = -1
+    #     else:
+    #         macd_signal = 0
+
+    #     return macd_signal
+    # def squeeze_momentum_strategy(self, data): 
+    #     length = 20
+    #     mult = 2.0
+    #     lengthKC = 20
+    #     multKC = 1.5
+    #     useTrueRange = True
+
+    #     # Calculate BB
+    #     data['basis'] = data['Close'].rolling(window=length).mean()
+    #     data['dev'] = multKC * data['Close'].rolling(window=length).std()
+    #     data['upperBB'] = data['basis'] + data['dev']
+    #     data['lowerBB'] = data['basis'] - data['dev']
+
+    #     # Calculate KC
+    #     data['ma'] = data['Close'].rolling(window=lengthKC).mean()
+    #     data['range'] = data['High'] - data['Low'] if not useTrueRange else np.maximum(np.maximum(data['High'] - data['Low'], abs(data['High'] - data['Close'].shift())), abs(data['Low'] - data['Close'].shift()))
+    #     data['range_ma'] = data['range'].rolling(window=lengthKC).mean()
+    #     data['upperKC'] = data['ma'] + data['range_ma'] * multKC
+    #     data['lowerKC'] = data['ma'] - data['range_ma'] * multKC
+
+    #     data['sqzOn']  = (data['lowerBB'] > data['lowerKC']) & (data['upperBB'] < data['upperKC'])
+    #     data['sqzOff'] = (data['lowerBB'] < data['lowerKC']) & (data['upperBB'] > data['upperKC'])
+    #     data['noSqz']  = (data['sqzOn'] == False) & (data['sqzOff'] == False)
+
+    #     #val calculation
+    #     data['val'] = np.nan
+    #     for i in range(lengthKC - 1, len(data)):
+    #         y = data['Close'].iloc[i - lengthKC + 1 : i + 1] - ((data['High'].iloc[i - lengthKC + 1 : i + 1] + data['Low'].iloc[i - lengthKC + 1 : i + 1]) / 2)
+    #         x = np.array(range(lengthKC)).reshape(-1,1)
+    #         model = LinearRegression()
+    #         model.fit(x, y)
+    #         data['val'].iloc[i] = model.coef_[0]
+
+    #     # Trading Signals
+    #     # data['Long'] = data['val'] > 0
+    #     # data['Short'] = data['val'] < 0
+
+    #     Buy_Sig = np.where((data['val'] > 0), 1, 0)
+    #     Sell_Sig = np.where((data['val'] < 0), -1, 0)
+
+    #     return Buy_Sig, Sell_Sig

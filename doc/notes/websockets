@@ -1,0 +1,13 @@
+Websockets are often used in real-time applications due to their ability to provide full-duplex communication channels over a single TCP connection. This means that data can be sent back and forth between a client and a server simultaneously, without the need for polling which is typically used in HTTP/HTTPS requests. 
+
+In the context of cryptocurrency trading, Websockets are especially useful for several reasons:
+
+1. **Real-time Market Data**: Cryptocurrency prices can fluctify rapidly and frequently. By using Websockets, you can receive real-time updates on market prices, trades, order book changes, and more. This is critical if you're implementing trading strategies that are sensitive to market movements.
+
+2. **Efficiency**: Unlike traditional HTTP requests which open and close a connection every time data is exchanged, a Websocket connection remains open, allowing data to be passed back and forth with less overhead. This reduces the latency and the load on the server, which is important when dealing with high-frequency trading systems.
+
+3. **Streaming Updates**: With Websockets, you can subscribe to specific channels (e.g., trade updates, ticker updates, order book updates) and the server will continuously send you updates about those channels. This is much more efficient than making individual requests for each piece of data.
+
+4. **User Actions**: Websockets can also provide real-time updates on user actions, such as order placements, order cancellations, and order modifications. This allows a trading system to respond quickly to these actions.
+
+Therefore, using Websockets can be a more efficient and effective way to manage and respond to the rapid pace of data and events in cryptocurrency trading. This is why many cryptocurrency exchanges, including KuCoin, provide Websockets API for their users.
