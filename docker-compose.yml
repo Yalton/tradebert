@@ -1,11 +1,13 @@
 version: "3.9"
 
 services:
-  billbot:
+  tradebert:
     container_name: tradebert
-    image: tradebot:latest
-    volumes:
-      - /opt/bots/Tradebert:/usr/src/app
-#      - /mnt/truenas/Datahoard/Programs/GPT4ALL_Models:/usr/src/app/models
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # volumes:
+    #   - /opt/bots/Tradebert:/usr/src/app
+    network_mode: host 
     working_dir: /usr/src/app
     restart: unless-stopped

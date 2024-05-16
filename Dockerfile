@@ -1,10 +1,27 @@
-#Blog (Dockerfile)
-FROM python:3.9
+FROM debian:latest
 
-WORKDIR $(pwd):/usr/src/app
+# Update the package list and install necessary dependencies
+RUN apt-get update && \
+    apt-get install -y python3 python3-venv python3-pip pkg-config default-libmysqlclient-dev build-essential iputils-ping curl
+    
+# Create a working directory
+WORKDIR /usr/src/app
 
-COPY requirements.txt .
+# Copy the local files to the container
+COPY . /usr/src/app
 
-RUN pip3 install -r requirements.txt
+# Set the timezone to US Central Time (UTC-6)
+ENV TZ=America/Chicago
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-CMD [ "python", "./interface.py"]
+# Create a virtual environment
+RUN python3 -m venv venv
+
+# Activate the virtual environment
+ENV PATH="/usr/src/app/venv/bin:$PATH"
+
+# Install the required Python packages in the virtual environment
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Set the default command to run the program
+CMD ["python3", "long_term_test.py"]

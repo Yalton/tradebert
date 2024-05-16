@@ -21,12 +21,12 @@ from modules import databaseInterface as DBMGR
 from modules import constants
 #import asset_analysis as assetAnalysis
 
-from kucoin.client import Market as KucoinMarket
-from kucoin.client import Trade as KucoinTrade
-#from kucoin.client import KucoinUser # Problem 
+# from kucoin.client import Market as KucoinMarket
+# from kucoin.client import Trade as KucoinTrade
+# #from kucoin.client import KucoinUser # Problem 
 
-from kucoin_futures.client import Market as KucoinFuturesMarket
-from kucoin_futures.client import Trade as KucoinFuturesTrade
+# from kucoin_futures.client import Market as KucoinFuturesMarket
+# from kucoin_futures.client import Trade as KucoinFuturesTrade
 
 
 
@@ -108,10 +108,10 @@ class TradingSystem(ABC):
 
     # Function to handle acquiring historical data
     def acquire_historical_data(self, symbol): 
-        aggregator = DataAggregator()
+        aggregator = DataAggregator(self.config.get("alphavantage", "api_key"))
         start_date = datetime.datetime.now() - datetime.timedelta(days=50)
         end_date = datetime.datetime.now()
-        data = aggregator.fetch_yfinance_api(symbol, start_date, end_date, interval=self.timeframe)
+        data = aggregator.fetch_stock_data(symbol, start_date, end_date, interval=self.timeframe)
         data.columns = data.columns.str.strip()
         return data
 
@@ -304,7 +304,9 @@ class TradingSystem(ABC):
 
             data = self.acquire_historical_data(symbol)
 
-            # print(data)
+            # if(data.is_empty()): 
+            #     print("No stock Data")
+            #     break 
 
             # Loop over strategies and their weights
             for strategy_name, weight in self.strategy_weights[symbol].items():

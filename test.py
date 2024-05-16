@@ -1,34 +1,45 @@
 import datetime
 
-#import predictive_models as pm
+import configparser
+
+# import predictive_models as pm
 import modules.tradingsystem as ts
 from modules.fetch_data import DataAggregator
 from modules.tech_indicators import TechnicalIndicators
 import modules.TradingSrategies as TS
-#from asset_analysis import AssetAnalyzer
+
+# from asset_analysis import AssetAnalyzer
 
 import pandas as pd
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import numpy as np
-from modules.constants import * 
+from modules.constants import *
 import sqlite3
+
 
 def generate_ensemble_signal(strategy_list):
     total_signal = 0
     for strategy in strategy_list:
         total_signal += strategy.generate_signal()
-    
+
     return total_signal
 
+# Read from Config file and import api keys
+def read_config():
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    return config
 
 
 def test_data_aggregator():
-    aggregator = DataAggregator()
-    
+    config = read_config()
+    aggregator = DataAggregator(config.get("alphavantage", "api_key"))
+
+
     # Test fetch_crypto_news
-    print("Testing fetch_crypto_news:")
-    aggregator.fetch_crypto_news()
-    
+    # print("Testing fetch_crypto_news:")
+    # aggregator.fetch_crypto_news()
+
     # Test extract_financial_news
     # print("\nTesting extract_financial_news:")
     # articles = aggregator.extract_financial_news()
@@ -36,29 +47,26 @@ def test_data_aggregator():
     #     print(f"Found {len(articles)} articles from MarketWatch.")
     # else:
     #     print("No articles found.")
-    
-    print("\nTesting fetch_asset_prices:")
-    # Test fetch_asset_prices
-    symbols = ['BTC', 'ETH']  # Add your symbols here
-    directory = "./csvs"  # Add your directory here
-    aggregator.fetch_asset_prices(symbols, directory, False)
-    print("Exception thrown")
-    
-    # Test fetch_yfinance_api
-    print("\nTesting fetch_yfinance_api:")
-    start_date = datetime.datetime.now() - datetime.timedelta(days=365)
 
-    # data['Gann'] = calculate_gann(data)
-    # data['CMF'] = calculate_cmf(data, 20)
-    # data = calculate_dmi(data, 14)
+    # print("\nTesting fetch_asset_prices:")
+    # # Test fetch_asset_prices
+    # symbols = ['BTC', 'ETH']  # Add your symbols here
+    # directory = "./csvs"  # Add your directory here
+    # aggregator.fetch_asset_prices(symbols, directory, False)
+    # print("Exception thrown")
+
+    # Test fetch_yfinance_api
+    print("\nTesting data fetcher:")
+    start_date = datetime.datetime.now() - datetime.timedelta(days=50)
 
     end_date = datetime.datetime.now()
-    data = aggregator.fetch_yfinance_api('AAPL', start_date, end_date)
-    data.to_csv('csvs/AAPL.csv')
+    data = aggregator.fetch_yfinance_api("AAPL", start_date, end_date)
+    print(data)
+    data.to_csv("csvs/AAPL2.csv")
 
 
 def test_tech_indicators():
-    
+
     # Initialize TechnicalIndicators class
 
     # Initialize Aggregator class
@@ -69,12 +77,12 @@ def test_tech_indicators():
     # end_date = datetime.datetime.now()
     # data = aggregator.fetch_yfinance_api('TSLA', start_date, end_date)
 
-    data = pd.read_csv('csvs/TSLA.csv')
-    data['Date'] = pd.to_datetime(data['Date'])
-    data.set_index('Date', inplace=True)
+    data = pd.read_csv("csvs/TSLA.csv")
+    data["Date"] = pd.to_datetime(data["Date"])
+    data.set_index("Date", inplace=True)
     TI = TechnicalIndicators(data)
 
-    #data = pd.read_csv('csvs/AAPL.csv')
+    # data = pd.read_csv('csvs/AAPL.csv')
     # Calculate moving average
 
     RSI = TI.relative_strength_index(14).rename("RSI")
@@ -89,7 +97,7 @@ def test_tech_indicators():
     GANN = TI.calculate_gann().rename("GANN")
     VWAP = TI.calculate_vwap().rename("VWAP")
 
-    #ATR.drop(['Date'], axis=1)
+    # ATR.drop(['Date'], axis=1)
     ATR.to_csv("FIFTY_MA.csv")
 
     print("RSI:")
@@ -109,7 +117,7 @@ def test_tech_indicators():
 
     print("Fibonnaci_Levels:")
     print(Fibonnaci_Levels)
-    
+
     print("ATR:")
     print(ATR)
 
@@ -126,7 +134,8 @@ def test_tech_indicators():
     print(VWAP)
 
     # Plot data
-    #ti.plot_data(data)
+    # ti.plot_data(data)
+
 
 # def test_models():
 #     testLinRegress = False
@@ -148,7 +157,7 @@ def test_tech_indicators():
 
 #     # Test models on some data
 #     X_test = data.iloc[-10:]  # last 10 rows
-    
+
 #     avg_test = []
 #     if(testLinRegress):
 #         linear_regressor = pm.LinearRegressor(symbol)
@@ -172,7 +181,7 @@ def test_tech_indicators():
 #         print("Actual ", X_test['Close'])
 #         avg_test.append(rnn.predict(X_test))
 
-        
+
 #         #rnn.predict(X_test.values.reshape((X_test.shape[0], 1, X_test.shape[1]))))
 
 #     if(testLTSM):
@@ -214,22 +223,23 @@ def test_tech_indicators():
 #     # print("Average", avg)
 #     # print("Actual ", X_test['Close'])
 
+
 def test_AssetAnalyzer():
     # Instantiate the class
-    analyzer = AssetAnalyzer('AAPL')  # Use 'AAPL' as the symbol
+    analyzer = AssetAnalyzer("AAPL")  # Use 'AAPL' as the symbol
 
     # Gather technical indicators
     analyzer.gatherTechIndicators()
     data = analyzer.data
 
     # Check the calculated technical indicators
-    print("Moving Average 7:\n", data['7_MA'])
-    print("Moving Average 25:\n", data['25_MA'])
-    print("Moving Average 99:\n", data['99_MA'])
-    print("Relative Strength Index:\n", data['RSI'])
+    print("Moving Average 7:\n", data["7_MA"])
+    print("Moving Average 25:\n", data["25_MA"])
+    print("Moving Average 99:\n", data["99_MA"])
+    print("Relative Strength Index:\n", data["RSI"])
 
-    print("ATR:\n", data['ATR'])
-    print("OBV:\n", data['OBV'])
+    print("ATR:\n", data["ATR"])
+    print("OBV:\n", data["OBV"])
 
     # print("Stochastic Oscillator:\n", data['STOC_OSC'])
     # print("Fibonnaci_Levels:\n", data['Fibonnaci_Levels'])
@@ -240,57 +250,79 @@ def test_AssetAnalyzer():
     # print("MACD:\n", data)
     # print("MACD Signal:\n", data)
 
-    #analyzer.trainPredictiveModels()
+    # analyzer.trainPredictiveModels()
 
-# def test_trader(): 
+
+# def test_trader():
 #     AlpacaSystem = ts.AlpacaSystem(1, "TestTrader")
 #     #AlpacaSystem.test()
 #     AlpacaSystem.market_buy("TLSA", 1)
 
-def test_trader(): 
-    #AlpacaSystem = ts.AlpacaSystem(1, "AlpacaTest")
+
+def test_trader():
+    # AlpacaSystem = ts.AlpacaSystem(1, "AlpacaTest")
     # BinanceSystem = ts.BinanceSystem(2, "BinanceTest")
     # KucoinSpotSystem = ts.KucoinSpotSystem(3, "KucoinTest")
     # KucoinFuturesSystem = ts.KucoinFuturesSystem(4, "KucoinFuturesTest")
 
-    symbols = ['CNDA', 'AAPL', 'TSLA', 'NVDA', 'BNED', 'SPIR', 'SPCE', 'LESL', 'CHGG', 'CRM', 'PLTR', 'AMZN', 'GOOG', 'X']
-    
-    strategy_weights_inner = {
-        'TrendFollowing': 1,
-        'MomentumTrading': 1,
-        'ReversalTrading': 1,
-        'VolumeAnalysis': 1,
-        'BreakoutTrading': 1,
-        'TrendStrengthVolatility': 1,
-        'VolumeFlow': 1,
-        'SupportResistance': 1,
-        'TrendContinuationReversal': 1,
-        'MeanReversion': 1,
-        'BollingerBands': 1,
-        'MACD': 2,
-        'SqueezeMomentum': 2,
-        'CryptoLadder': 2,
-    }
+    symbols = [
+        "CNDA",
+        "AAPL",
+        "TSLA",
+        "NVDA",
+        "BNED",
+        "SPIR",
+        "SPCE",
+        "LESL",
+        "CHGG",
+        "CRM",
+        "PLTR",
+        "AMZN",
+        "GOOG",
+        "X",
+    ]
 
+    strategy_weights_inner = {
+        "TrendFollowing": 1,
+        "MomentumTrading": 1,
+        "ReversalTrading": 1,
+        "VolumeAnalysis": 1,
+        "BreakoutTrading": 1,
+        "TrendStrengthVolatility": 1,
+        "VolumeFlow": 1,
+        "SupportResistance": 1,
+        "TrendContinuationReversal": 1,
+        "MeanReversion": 1,
+        "BollingerBands": 1,
+        "MACD": 2,
+        "SqueezeMomentum": 2,
+        "CryptoLadder": 2,
+    }
 
     strategy_weights = {symbol: strategy_weights_inner for symbol in symbols}
 
-    AlpacaSystem = ts.AlpacaSystem(1, "AlpacaTest", symbols=symbols, strategy_weights=strategy_weights, congruence_level="low", risk_reward_ratio=1)
+    AlpacaSystem = ts.AlpacaSystem(
+        1,
+        "AlpacaTest",
+        symbols=symbols,
+        strategy_weights=strategy_weights,
+        congruence_level="low",
+        risk_reward_ratio=1,
+    )
 
     AlpacaSystem.system_loop()
-    #AlpacaSystem.market_buy("TLSA", 1)
+    # AlpacaSystem.market_buy("TLSA", 1)
 
     # # print(signals)
-
 
     # AlpacaSystem = ts.AlpacaSystem(1, "AlpacaTest", symbols=symbols, strategy_weights=strategy_weights, congruence_level="low", risk_reward_ratio=2)
 
     # buying_power = AlpacaSystem.get_balance()
-    
+
     # print(f"Buying Power {buying_power}")
-   
+
     # print(f"Current Price {AlpacaSystem.get_current_price('AAPL')}")
-    
+
     # print(f"Trade Amount {AlpacaSystem.calculate_trade_amount('Buy')}")
 
     # print(f"Take Profit Price {AlpacaSystem.calculate_take_profit_price('AAPL')}")
@@ -298,65 +330,91 @@ def test_trader():
     # print(f"Stop Price Amount {AlpacaSystem.calculate_stop_price('AAPL')}")
 
 
-
-def test_Strategies(): 
+def test_Strategies():
 
     # print(signals)
-    symbols = ['CNDA', 'AAPL', 'TSLA', 'NVDA', 'BNED', 'SPIR', 'SPCE', 'LESL', 'CHGG', 'CRM', 'PLTR', 'AMZN', 'GOOG', 'X']
+    symbols = [
+        "CNDA",
+        "AAPL",
+        "TSLA",
+        "NVDA",
+        "BNED",
+        "SPIR",
+        "SPCE",
+        "LESL",
+        "CHGG",
+        "CRM",
+        "PLTR",
+        "AMZN",
+        "GOOG",
+        "X",
+    ]
     strategy_weights_inner = {
-        'TrendFollowing': 1,
-        'MomentumTrading': 1,
-        'ReversalTrading': 1,
-        'VolumeAnalysis': 1,
-        'BreakoutTrading': 1,
-        'TrendStrengthVolatility': 1,
-        'VolumeFlow': 1,
-        'SupportResistance': 1,
-        'TrendContinuationReversal': 1,
-        'MeanReversion': 1,  
-        'BollingerBands': 3,
-        'MACD': 5,
-        'SqueezeMomentum': 3,
-        'CryptoLadder': 1,
+        "TrendFollowing": 1,
+        "MomentumTrading": 1,
+        "ReversalTrading": 1,
+        "VolumeAnalysis": 1,
+        "BreakoutTrading": 1,
+        "TrendStrengthVolatility": 1,
+        "VolumeFlow": 1,
+        "SupportResistance": 1,
+        "TrendContinuationReversal": 1,
+        "MeanReversion": 1,
+        "BollingerBands": 3,
+        "MACD": 5,
+        "SqueezeMomentum": 3,
+        "CryptoLadder": 1,
     }
 
     strategy_weights = {symbol: strategy_weights_inner for symbol in symbols}
 
-
-    system = ts.AlpacaSystem(1, "AlpacaTest", symbols=symbols, strategy_weights=strategy_weights, congruence_level="medium")
+    system = ts.AlpacaSystem(
+        1,
+        "AlpacaTest",
+        symbols=symbols,
+        strategy_weights=strategy_weights,
+        congruence_level="medium",
+    )
     return system.analyze_assets()
 
 
-def test_order(): 
-    symbols = ['CNDA', 'AAPL', 'TSLA']
+def test_order():
+    symbols = ["CNDA", "AAPL", "TSLA"]
     strategy_weights_inner = {
-        'TrendFollowing': 1,
-        'MomentumTrading': 1,
-        'ReversalTrading': 1,
-        'VolumeAnalysis': 1,
-        'BreakoutTrading': 1,
-        'TrendStrengthVolatility': 1,
-        'VolumeFlow': 1,
-        'SupportResistance': 1,
-        'TrendContinuationReversal': 1,
-        'MeanReversion': 1,
-        'BollingerBands': 1,
-        'MACD': 2,
-        'SqueezeMomentum': 2,
-        'CryptoLadder': 2,
+        "TrendFollowing": 1,
+        "MomentumTrading": 1,
+        "ReversalTrading": 1,
+        "VolumeAnalysis": 1,
+        "BreakoutTrading": 1,
+        "TrendStrengthVolatility": 1,
+        "VolumeFlow": 1,
+        "SupportResistance": 1,
+        "TrendContinuationReversal": 1,
+        "MeanReversion": 1,
+        "BollingerBands": 1,
+        "MACD": 2,
+        "SqueezeMomentum": 2,
+        "CryptoLadder": 2,
     }
 
-    symbol = 'TSLA'
+    symbol = "TSLA"
 
     strategy_weights = {symbol: strategy_weights_inner for symbol in symbols}
 
-    system = ts.AlpacaSystem(1, "AlpacaTest", symbols=symbols, strategy_weights=strategy_weights, congruence_level="medium")
+    system = ts.AlpacaSystem(
+        1,
+        "AlpacaTest",
+        symbols=symbols,
+        strategy_weights=strategy_weights,
+        congruence_level="medium",
+    )
 
     system.bracket_order(symbol, 1, system.get_current_price(symbol))
 
+
 if __name__ == "__main__":
 
-    # print("Strategy, Results. ", test_Strategies())
-    test_trader()
+    test_data_aggregator()
+    print("Strategy, Results. ", test_Strategies())
+    # test_trader()
     # test_order()
-

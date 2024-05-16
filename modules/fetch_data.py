@@ -4,18 +4,23 @@ from bs4 import BeautifulSoup
 import os
 from datetime import datetime, timedelta
 import yfinance as yf
+import time
+
+# from alpha_vantage.timeseries import TimeSeries
 
 
 class DataAggregator:
-    def __init__(self): 
-        pass
+    def __init__(self, alpha_api_key): 
+        self.api_key = alpha_api_key
+        # self.ts = TimeSeries(key=self.api_key, output_format='pandas')  # Initialize TimeSeries instance
+
 
     def _make_request(self, url, params=None):
         """A helper method to make HTTP requests and handle exceptions."""
         try:
             response = requests.get(url, params=params)
             response.raise_for_status()
-            return response
+            return response.json()
         except requests.exceptions.HTTPError as errh:
             print(f"HTTP Error: {errh}")
         except requests.exceptions.ConnectionError as errc:
@@ -26,42 +31,119 @@ class DataAggregator:
             print(f"Something went wrong... : {err}")
         return None
 
-        # function to download data from cryptocompare
-        def download_cryptocompare_data(symbol, toCSV):
-            url = 'https://min-api.cryptocompare.com/data/histoday'
-            params = {'fsym': symbol, 'tsym': 'USD', 'limit': '2000'}
+    def fetch_stock_data(self, symbol, start_date, end_date, interval='15min'):
+        interval = '15min'
+        """Fetch data from Alpha Vantage API for a specific symbol."""
+        try:
+            base_url = 'https://www.alphavantage.co/query'
+            params = {
+                'function': 'TIME_SERIES_INTRADAY',
+                'symbol': symbol,
+                'interval': interval,
+                'outputsize': 'full',
+                'apikey': self.api_key,
+                'datatype': 'json'
+            }
 
-            # download data from cryptocompare
-            response = requests.get(url, params=params)
+            if start_date:
+                params['start'] = start_date.strftime('%Y-%m-%d')
+            if end_date:
+                params['enddate'] = end_date.strftime('%Y-%m-%d')
 
-            # data = response.json()['Data']
+            if start_date:
+                params['start'] = start_date.strftime('%Y-%m-%d')
+            if end_date:
+                params['enddate'] = end_date.strftime('%Y-%m-%d')
 
-            data = response.json()['Data']
+            request_url = f"{base_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
+            print(f"Sending request to Alpha Vantage API: {request_url}")
 
-            # create a pandas dataframe from the downloaded data
-            df = pd.DataFrame(data)
+            response = self._make_request(base_url, params=params)
 
-            df.to_csv("csvs/debug.csv")
+            if response:
+                # if 'Error Message' in response:
+                #     print(f"Alpha Vantage API Error: {response['Error Message']}")
+                # elif 'Time Series (15min)' in response:
+                data = response['Time Series (15min)']
+                df = pd.DataFrame.from_dict(data, orient='index')
+                df = df.rename(columns={'1. open': 'Open', '2. high': 'High', '3. low': 'Low', '4. close': 'Close', '5. volume': 'Volume'})
+                df.index = pd.to_datetime(df.index)
+                df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
+                df.reset_index(inplace=True)
+                df.rename(columns={'index': 'Date'}, inplace=True)
+                df['Adj_Close'] = df['Close']  # Alpha Vantage doesn't provide adjusted close, so we'll set it to the regular close
+                return df[['Date', 'Open', 'High', 'Low', 'Close', 'Adj_Close', 'Volume']]
 
-            df['time'] = pd.to_datetime(df['time'], unit='s').dt.date
+            else:
+                print("Error retrieving data from Alpha Vantage API.")
+        except Exception as e:
+            print(f"An error occurred while fetching data from Alpha Vantage API: {e}")
+            return self.fetch_yfinance_api(symbol, start_date, end_date,)
+    
+    def fetch_yfinance_api(self, symbol, start_date, end_date, interval='15m'):
+        """Fetch data from Yahoo Finance API for a specific symbol."""
+        try:
+            print("Yfinance start_date", start_date, " yfinance end date ", end_date)
+            max_retries = 3
+            retry_delay = 5  # seconds
 
-            # filter the data based on the specified date range
-            mask = (df['time'] >= start_date) & (df['time'] <= end_date)
-            df = df.loc[mask]
+            for attempt in range(max_retries):
+                data = yf.download(symbol, start=start_date, end=end_date, interval=interval)
+                if not data.empty:
+                    break
+                else:
+                    print(f"Attempt {attempt+1} failed. Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)            
+            data = data.rename(columns={'Adj Close': 'Adj_Close'})
+            print("Yfinance data is", data)
+            return data
+        except Exception as e:
+            print(f"An error occurred while fetching data from Yahoo Finance API: {e}")
 
-            # save the data to a CSV file
-            if(toCSV):
-                file_path = os.path.join(dir_path, f'{symbol}_cryptocompare.csv')
-                df.to_csv(file_path, index=False)
-            return df 
+
+
+    def whale_watcher(self): 
+        pass
+
+
+
+
+        # # function to download data from cryptocompare
+        # def download_cryptocompare_data(symbol, toCSV):
+        #     url = 'https://min-api.cryptocompare.com/data/histoday'
+        #     params = {'fsym': symbol, 'tsym': 'USD', 'limit': '2000'}
+
+        #     # download data from cryptocompare
+        #     response = requests.get(url, params=params)
+
+        #     # data = response.json()['Data']
+
+        #     data = response.json()['Data']
+
+        #     # create a pandas dataframe from the downloaded data
+        #     df = pd.DataFrame(data)
+
+        #     df.to_csv("csvs/debug.csv")
+
+        #     df['time'] = pd.to_datetime(df['time'], unit='s').dt.date
+
+        #     # filter the data based on the specified date range
+        #     mask = (df['time'] >= start_date) & (df['time'] <= end_date)
+        #     df = df.loc[mask]
+
+        #     # save the data to a CSV file
+        #     if(toCSV):
+        #         file_path = os.path.join(dir_path, f'{symbol}_cryptocompare.csv')
+        #         df.to_csv(file_path, index=False)
+        #     return df 
             
-        # loop through the list of symbols and download the data
-        datalist = []
-        for symbol in symbol_list:
-            print(f'Downloading data for {symbol}')
-            datalist.append(download_cryptocompare_data(symbol, toCSV))
-            #download_yahoo_finance_data(symbol)
-            print('Data download completed successfully!')
+        # # loop through the list of symbols and download the data
+        # datalist = []
+        # for symbol in symbol_list:
+        #     print(f'Downloading data for {symbol}')
+        #     datalist.append(download_cryptocompare_data(symbol, toCSV))
+        #     #download_yahoo_finance_data(symbol)
+        #     print('Data download completed successfully!')
 
     # def fetch_yfinance_api(self, symbol, start_date, end_date):
     #     """Fetch data from Yahoo Finance API for a specific symbol."""
@@ -72,21 +154,6 @@ class DataAggregator:
     #         return data
     #     except Exception as e:
     #         print(f"An error occurred while fetching data from Yahoo Finance API: {e}")
-
-    def fetch_yfinance_api(self, symbol, start_date, end_date, interval='15m'):
-        """Fetch data from Yahoo Finance API for a specific symbol."""
-        try:
-            data = yf.download(symbol, start=start_date, end=end_date, interval=interval)
-            data = data.rename(columns={'Adj Close': 'Adj_Close'})
-            # print("Yfinance data is", data)
-            return data
-        except Exception as e:
-            print(f"An error occurred while fetching data from Yahoo Finance API: {e}")
-
-
-
-    def whale_watcher(self): 
-        pass
 
 # # function to download data from yahoo finance
 # def download_yahoo_finance_data(symbol):

@@ -7,7 +7,7 @@ import datetime
 from datetime import date, timedelta
 import sqlite3
 
-import predictive_models as PredMods
+# import '15min' as PredMods
 
 class AssetAnalyzer:
     
@@ -17,20 +17,20 @@ class AssetAnalyzer:
         self.aggregator = DataAggregator()
         self.create_table_if_not_exists()
 
-    def trainPredictiveModels(self): 
-        # Initialize models
-        self.linear_regressor = PredMods.LinearRegressor()
-        self.rnn = PredMods.RNN()
-        self.lstm = PredMods.LSTMModel()
-        self.hmm = PredMods.HMM()
-        self.arima = PredMods.ARIMAModel()
+    # def trainPredictiveModels(self): 
+    #     # Initialize models
+    #     self.linear_regressor = PredMods.LinearRegressor()
+    #     self.rnn = PredMods.RNN()
+    #     self.lstm = PredMods.LSTMModel()
+    #     self.hmm = PredMods.HMM()
+    #     self.arima = PredMods.ARIMAModel()
 
-        # Train Models
-        self.linear_regressor.train(self.data)
-        self.rnn.train(self.data)
-        self.lstm.train(self.data)
-        self.hmm.train(self.data)
-        self.arima.train(self.data)
+    #     # Train Models
+    #     self.linear_regressor.train(self.data)
+    #     self.rnn.train(self.data)
+    #     self.lstm.train(self.data)
+    #     self.hmm.train(self.data)
+    #     self.arima.train(self.data)
 
     def gatherOnlineSentiment(self): 
         pass

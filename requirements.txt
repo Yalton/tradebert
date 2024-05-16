@@ -2,8 +2,8 @@ configparser
 alpaca_trade_api 
 pandas
 numpy
-yfinance==0.2.29
-tensorflow==2.11.0
+yfinance==0.2.38
+# tensorflow==2.11.0
 keras 
 scikit-learn
 mplfinance 
@@ -17,8 +17,8 @@ statsmodels
 arch
 ta
 tqdm
-kucoin-python
-kucoin-futures-python
 mysql
+mysql-connector-python
+alpha-vantage
 #abc
 #talib 
