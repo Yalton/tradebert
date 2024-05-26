@@ -84,7 +84,7 @@ class DataAggregator:
     def fetch_yfinance_api(self, symbol, start_date, end_date, interval='15m'):
         """Fetch data from Yahoo Finance API for a specific symbol."""
         try:
-            print("Yfinance start_date", start_date, " yfinance end date ", end_date)
+            print("Yfinance start_date", start_date, " yfinance end date ", end_date, " Fetching data for ", symbol)
             max_retries = 3
             retry_delay = 5  # seconds
 
@@ -100,6 +100,8 @@ class DataAggregator:
             return data
         except Exception as e:
             print(f"An error occurred while fetching data from Yahoo Finance API: {e}")
+            return pd.DataFrame()  # Return an empty DataFrame instead of None
+
 
 
 
