@@ -32,53 +32,54 @@ class DataAggregator:
         return None
 
     def fetch_stock_data(self, symbol, start_date, end_date, interval='15min'):
-        interval = '15min'
-        """Fetch data from Alpha Vantage API for a specific symbol."""
-        try:
-            base_url = 'https://www.alphavantage.co/query'
-            params = {
-                'function': 'TIME_SERIES_INTRADAY',
-                'symbol': symbol,
-                'interval': interval,
-                'outputsize': 'full',
-                'apikey': self.api_key,
-                'datatype': 'json'
-            }
+        self.fetch_yfinance_api(symbol, start_date, end_date)
+        # interval = '15min'
+        # """Fetch data from Alpha Vantage API for a specific symbol."""
+        # try:
+        #     base_url = 'https://www.alphavantage.co/query'
+        #     params = {
+        #         'function': 'TIME_SERIES_INTRADAY',
+        #         'symbol': symbol,
+        #         'interval': interval,
+        #         'outputsize': 'full',
+        #         'apikey': self.api_key,
+        #         'datatype': 'json'
+        #     }
 
-            if start_date:
-                params['start'] = start_date.strftime('%Y-%m-%d')
-            if end_date:
-                params['enddate'] = end_date.strftime('%Y-%m-%d')
+        #     if start_date:
+        #         params['start'] = start_date.strftime('%Y-%m-%d')
+        #     if end_date:
+        #         params['enddate'] = end_date.strftime('%Y-%m-%d')
 
-            if start_date:
-                params['start'] = start_date.strftime('%Y-%m-%d')
-            if end_date:
-                params['enddate'] = end_date.strftime('%Y-%m-%d')
+        #     if start_date:
+        #         params['start'] = start_date.strftime('%Y-%m-%d')
+        #     if end_date:
+        #         params['enddate'] = end_date.strftime('%Y-%m-%d')
 
-            request_url = f"{base_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
-            print(f"Sending request to Alpha Vantage API: {request_url}")
+        #     request_url = f"{base_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
+        #     print(f"Sending request to Alpha Vantage API: {request_url}")
 
-            response = self._make_request(base_url, params=params)
+        #     response = self._make_request(base_url, params=params)
 
-            if response:
-                # if 'Error Message' in response:
-                #     print(f"Alpha Vantage API Error: {response['Error Message']}")
-                # elif 'Time Series (15min)' in response:
-                data = response['Time Series (15min)']
-                df = pd.DataFrame.from_dict(data, orient='index')
-                df = df.rename(columns={'1. open': 'Open', '2. high': 'High', '3. low': 'Low', '4. close': 'Close', '5. volume': 'Volume'})
-                df.index = pd.to_datetime(df.index)
-                df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
-                df.reset_index(inplace=True)
-                df.rename(columns={'index': 'Date'}, inplace=True)
-                df['Adj_Close'] = df['Close']  # Alpha Vantage doesn't provide adjusted close, so we'll set it to the regular close
-                return df[['Date', 'Open', 'High', 'Low', 'Close', 'Adj_Close', 'Volume']]
+        #     if response:
+        #         # if 'Error Message' in response:
+        #         #     print(f"Alpha Vantage API Error: {response['Error Message']}")
+        #         # elif 'Time Series (15min)' in response:
+        #         data = response['Time Series (15min)']
+        #         df = pd.DataFrame.from_dict(data, orient='index')
+        #         df = df.rename(columns={'1. open': 'Open', '2. high': 'High', '3. low': 'Low', '4. close': 'Close', '5. volume': 'Volume'})
+        #         df.index = pd.to_datetime(df.index)
+        #         df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
+        #         df.reset_index(inplace=True)
+        #         df.rename(columns={'index': 'Date'}, inplace=True)
+        #         df['Adj_Close'] = df['Close']  # Alpha Vantage doesn't provide adjusted close, so we'll set it to the regular close
+        #         return df[['Date', 'Open', 'High', 'Low', 'Close', 'Adj_Close', 'Volume']]
 
-            else:
-                print("Error retrieving data from Alpha Vantage API.")
-        except Exception as e:
-            print(f"An error occurred while fetching data from Alpha Vantage API: {e}")
-            return self.fetch_yfinance_api(symbol, start_date, end_date,)
+        #     else:
+        #         print("Error retrieving data from Alpha Vantage API.")
+        # except Exception as e:
+        #     print(f"An error occurred while fetching data from Alpha Vantage API: {e}")
+        #     return self.fetch_yfinance_api(symbol, start_date, end_date,)
     
     def fetch_yfinance_api(self, symbol, start_date, end_date, interval='15m'):
         """Fetch data from Yahoo Finance API for a specific symbol."""
