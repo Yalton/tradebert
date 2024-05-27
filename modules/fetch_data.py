@@ -32,7 +32,7 @@ class DataAggregator:
         return None
 
     def fetch_stock_data(self, symbol, start_date, end_date, interval='15min'):
-        self.fetch_yfinance_api(symbol, start_date, end_date)
+        return self.fetch_yfinance_api(symbol, start_date, end_date)
         # interval = '15min'
         # """Fetch data from Alpha Vantage API for a specific symbol."""
         # try:
